@@ -144,7 +144,7 @@ def main():
     port = args.com  # set port number
     ser = serial.Serial(port=port, baudrate=args.baudrate, timeout=10)  # open the serial , timeout=1
     ser.set_buffer_size(rx_size=12800, tx_size=12800)
-    print(ser)
+    print(ser)#串口参数设置
 
     if not os.path.exists(args.path_records):
         os.makedirs(args.path_records)
@@ -169,14 +169,14 @@ def main():
                 s += 1
                 # print(k,":",testX[i][j][k][0])
         testW = np.asanyarray(testZ, dtype="uint32")
-        ser.flushOutput()
+        ser.flushOutput()#清空串口缓冲区
         datalen = 1250
         testW[0] = (datalen << 16) | 0x55aa
-        result = ser.write(testW)
+        result = ser.write(testW)#发送每个subject_id处理好的待测试数据
         # ser.in_waiting()
         while ser.in_waiting < 5:
           pass
-          time.sleep(0.01)
+          time.sleep(0.01)#等待嵌入式端返回判断结果
         recv = ser.read(8)
         ser.reset_input_buffer()
         # the format of recv is ['<result>','<dutation>']
@@ -190,7 +190,7 @@ def main():
           segs_TP += 1 if result == 1 else 0
         else:
           segs_TN += 1 if result == 0 else 0
-          segs_FP += 1 if result == 1 else 0
+          segs_FP += 1 if result == 1 else 0#混淆矩阵测试模型各方面性能
       f1 = round(F1([segs_TP, segs_FN, segs_FP, segs_TN]), 5)
       fb = round(FB([segs_TP, segs_FN, segs_FP, segs_TN]), 5)
       se = round(Sensitivity([segs_TP, segs_FN, segs_FP, segs_TN]), 5)
